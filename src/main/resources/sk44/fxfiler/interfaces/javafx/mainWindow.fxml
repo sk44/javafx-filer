@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="401.0" prefWidth="691.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml" fx:controller="sk44.fxfiler.interfaces.javafx.MainWindowController">
+  <children>
+    <SplitPane dividerPositions="0.7393483709273183" focusTraversable="true" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <items>
+        <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+          <children>
+            <SplitPane dividerPositions="0.5021834061135371" focusTraversable="true" prefHeight="207.0" prefWidth="573.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <items>
+                <fx:include fx:id="leftFilerView" source="filerView.fxml" focusTraversable="true" />
+                <fx:include fx:id="rightFilerView" source="filerView.fxml" />
+              </items>
+            </SplitPane>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+          <children>
+            <TextArea fx:id="messageArea" editable="false" focusTraversable="false" prefHeight="57.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+  </children>
+  <stylesheets>
+    <URL value="@style.css" />
+  </stylesheets>
+</AnchorPane>

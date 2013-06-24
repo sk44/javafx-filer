@@ -1,0 +1,21 @@
+/*
+    Document   : style
+    Created on : Jun 21, 2013, 10:49:46 PM
+    Author     : sk
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root {
+    display: block;
+}
+
+.column-header-background {
+    visibility: hidden;
+    -fx-padding: -1em;
+}
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-font-family: 'monospace';
+}
