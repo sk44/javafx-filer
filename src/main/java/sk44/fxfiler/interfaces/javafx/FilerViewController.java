@@ -19,6 +19,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
@@ -48,6 +49,13 @@ public class FilerViewController implements Initializable {
     protected void handleKeyPressedInTable(KeyEvent event) {
         System.out.println("key pressed in table: " + event.getCode());
         switch (event.getCode()) {
+            case G:
+                if (event.isShiftDown()) {
+                    focusLast();
+                } else {
+                    focusFirst();
+                }
+                break;
             case H:
             case LEFT:
                 moveTo(currentPath.getParent());
@@ -62,11 +70,17 @@ public class FilerViewController implements Initializable {
             case RIGHT:
                 goForward();
                 break;
+            case O:
+                // TODO
+                break;
             case TAB:
                 otherFilerView.focus();
                 break;
             case DOWN:
                 // TODO
+                break;
+            case LESS:
+                moveTo(currentPath.getRoot());
                 break;
         }
     }
@@ -86,6 +100,7 @@ public class FilerViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        filesView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
@@ -110,11 +125,25 @@ public class FilerViewController implements Initializable {
 
     private void focusPrevious() {
         filesView.getFocusModel().focusPrevious();
-        filesView.scrollTo(filesView.getFocusModel().getFocusedIndex());
+        scrollToFocused();
     }
 
     private void focusNext() {
         filesView.getFocusModel().focusNext();
+        scrollToFocused();
+    }
+
+    private void focusFirst() {
+        filesView.getFocusModel().focus(0);
+        scrollToFocused();
+    }
+
+    private void focusLast() {
+        filesView.getFocusModel().focus(filesView.getItems().size() - 1);
+        scrollToFocused();
+    }
+
+    private void scrollToFocused() {
         filesView.scrollTo(filesView.getFocusModel().getFocusedIndex());
     }
 

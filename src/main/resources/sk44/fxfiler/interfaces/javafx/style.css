@@ -15,7 +15,19 @@ root {
     -fx-padding: -1em;
 }
 
+.table-view {
+    -fx-table-cell-border-color: transparent;
+}
+
 .table-view .table-cell {
     -fx-border-color: transparent;
     -fx-font-family: 'monospace';
+}
+
+.table-row-cell:focused {
+    -fx-background-color: #99ffff;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: red;
 }
