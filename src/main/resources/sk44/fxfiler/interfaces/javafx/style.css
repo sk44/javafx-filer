@@ -1,13 +1,20 @@
 /*
-    Document   : style
-    Created on : Jun 21, 2013, 10:49:46 PM
-    Author     : sk
-    Description:
-        Purpose of the stylesheet follows.
+ @see: http://edu.makery.ch/blog/2012/11/26/javafx-tutorial-addressapp-4/
 */
 
-root {
-    display: block;
+.mainFxmlClass {
+    -fx-font-family: 'Lucida Console', 'MigMix 1M';
+    -fx-font-size: 11pt;
+}
+.background, .text-area {
+    -fx-background-color: #1d1d1d;
+    -fx-text-fill: white;
+}
+
+.label {
+    -fx-text-fill: white;
+    -fx-opacity: 0.6;
+    -fx-background-color: #1d1d1d;
 }
 
 .column-header-background {
@@ -16,18 +23,51 @@ root {
 }
 
 .table-view {
+    -fx-base: #1d1d1d;
+    -fx-control-inner-background: #1d1d1d;
+    -fx-background-color: #1d1d1d;
     -fx-table-cell-border-color: transparent;
+    /*    -fx-background-color: transparent;*/
+    -fx-border-color:
+        derive(-fx-base, 80%)
+        transparent
+        derive(-fx-base, 80%)
+        transparent;
+}
+
+.table-view .filler {
+    -fx-size: 35;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-insets: 0 10 1 0;
 }
 
 .table-view .table-cell {
     -fx-border-color: transparent;
-    -fx-font-family: 'monospace';
 }
 
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: #0066ff;
+}
+
+/*
 .table-row-cell:focused {
     -fx-background-color: #99ffff;
 }
 
 .table-row-cell:selected {
-    -fx-background-color: red;
+    -fx-background-color: #0066ff;
+}
+*/
+
+.split-pane:horizontal > * > .split-pane-divider {
+    -fx-border-color: transparent #1d1d1d transparent #1d1d1d;
+    -fx-background-color: transparent, derive(#1d1d1d,20%);
+}
+.split-pane:vertical > * > .split-pane-divider {
+    -fx-border-color: #1d1d1d transparent #1d1d1d transparent;
+    -fx-background-color: derive(#1d1d1d,20%), transparent;
+}
+
+.split-pane {
+    -fx-padding: 1 0 0 0;
 }

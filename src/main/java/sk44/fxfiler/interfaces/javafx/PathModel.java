@@ -31,10 +31,22 @@ public class PathModel {
         this.parent = parent;
     }
 
+    public void copyTo(Path directory) {
+        try {
+            Files.copy(path, directory);
+        } catch (IOException ex) {
+            Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public Path getDirectoryPath() {
         if (isDirectory() == false) {
             return null;
         }
+        return path;
+    }
+
+    public Path getPath() {
         return path;
     }
 
@@ -45,12 +57,24 @@ public class PathModel {
         return path.getFileName().toString() + (isDirectory() ? "/" : "");
     }
 
-    public String getInfo() {
+    public String getType() {
         if (isDirectory()) {
             return DIR_INFO;
         }
-        // TODO
-        return "12,345K";
+        String fileName = getName();
+        return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+    }
+
+    public long getSize() {
+        if (isDirectory()) {
+            return -1;
+        }
+        try {
+            return Files.size(path);
+        } catch (IOException ex) {
+            Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
     }
 
     public boolean isDirectory() {
