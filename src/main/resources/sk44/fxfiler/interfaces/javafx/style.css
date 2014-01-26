@@ -1,20 +1,15 @@
-/*
- @see: http://edu.makery.ch/blog/2012/11/26/javafx-tutorial-addressapp-4/
-*/
-
 .mainFxmlClass {
-    -fx-font-family: 'Lucida Console', 'MigMix 1M';
+    /*-fx-font-family: 'Lucida Console', 'MigMix 1M';*/
     -fx-font-size: 11pt;
+	-fx-border-color: transparent;
 }
-.background, .text-area {
-    -fx-background-color: #1d1d1d;
-    -fx-text-fill: white;
+.background,
+.text-area {
+	-fx-border-color: transparent;
 }
 
 .label {
-    -fx-text-fill: white;
     -fx-opacity: 0.6;
-    -fx-background-color: #1d1d1d;
 }
 
 .column-header-background {
@@ -23,16 +18,9 @@
 }
 
 .table-view {
-    -fx-base: #1d1d1d;
-    -fx-control-inner-background: #1d1d1d;
-    -fx-background-color: #1d1d1d;
     -fx-table-cell-border-color: transparent;
-    /*    -fx-background-color: transparent;*/
-    -fx-border-color:
-        derive(-fx-base, 80%)
-        transparent
-        derive(-fx-base, 80%)
-        transparent;
+	-fx-background-color: transparent;
+	-fx-borer-color: transparent;
 }
 
 .table-view .filler {
@@ -46,28 +34,46 @@
 }
 
 .table-view:focused .table-row-cell:filled:focused:selected {
-    -fx-background-color: #0066ff;
+	-fx-background-color: rgba(153,153,153,0.8);
 }
 
-/*
-.table-row-cell:focused {
-    -fx-background-color: #99ffff;
+.table-row-cell:empty,
+.table-row-cell:hover:empty {
+	-fx-background-color: transparent;
 }
 
-.table-row-cell:selected {
-    -fx-background-color: #0066ff;
-}
-*/
-
-.split-pane:horizontal > * > .split-pane-divider {
-    -fx-border-color: transparent #1d1d1d transparent #1d1d1d;
-    -fx-background-color: transparent, derive(#1d1d1d,20%);
-}
-.split-pane:vertical > * > .split-pane-divider {
-    -fx-border-color: #1d1d1d transparent #1d1d1d transparent;
-    -fx-background-color: derive(#1d1d1d,20%), transparent;
+.split-pane-divider {
+	-fx-background-color: #ffffff;
+	-fx-border-color: transparent;
+	-fx-padding: 0;
 }
 
-.split-pane {
-    -fx-padding: 1 0 0 0;
+.split-pane > * > .split-pane-divider {
+	-fx-border-color: transparent transparent transparent transparent;
+	-fx-background-color: transparent, transparent;
+	-fx-background-insets: 0, 0 1 0 1;
+}
+
+.scroll-bar {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+}
+
+.increment-button, .decrement-button {
+	-fx-background-color: #ffffff;
+	-fx-background-radius: 0;
+}
+
+.scroll-bar .track {
+	-fx-background-color: #ffffff;
+	-fx-border-color: transparent;
+
+	-fx-background-radius: 0;
+	-fx-border-radius: 0;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #bbbbbb;
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 2em;
 }

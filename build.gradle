@@ -1,5 +1,5 @@
 apply plugin: 'java'
-apply from: 'https://repository-javafx-gradle-plugin.forge.cloudbees.com/release/javafx.plugin'
+apply from: 'javafx.plugin'
 
 defaultTasks 'clean', 'assemble'
 
