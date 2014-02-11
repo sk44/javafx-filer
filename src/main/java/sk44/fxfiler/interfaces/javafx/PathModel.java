@@ -24,11 +24,16 @@ public class PathModel {
     private static final String DIR_INFO = "<DIR>";
     private static final String PARENT_NAME = "..";
     private static final String MARK_VALUE = "*";
+    private static final String SIZE_VALUE_FOR_DIR = "";
+    private static final String LAST_MODIFIED_DATE_FORMAT = "yy/MM/dd HH:mm:ss";
     private final Path path;
     private final boolean parent;
-//	private boolean marked;
     private final BooleanProperty markedProperty = new SimpleBooleanProperty(false);
     private final StringProperty markValueProperty = new SimpleStringProperty();
+    private final StringProperty nameProperty = new SimpleStringProperty();
+    private final StringProperty typeProperty = new SimpleStringProperty();
+    private final StringProperty sizeValueProperty = new SimpleStringProperty();
+    private final StringProperty lastModifiedProperty = new SimpleStringProperty();
 
     public PathModel(Path path) {
         this(path, false);
@@ -37,6 +42,15 @@ public class PathModel {
     public PathModel(Path path, boolean parent) {
         this.path = path;
         this.parent = parent;
+        nameProperty.set(formatNameFromPath());
+        typeProperty.set(getType());
+        if (isDirectory()) {
+            sizeValueProperty.set(SIZE_VALUE_FOR_DIR);
+        } else {
+            sizeValueProperty.set(FileSizeFormatter.format(getSizeForFile()));
+        }
+        lastModifiedProperty.set(
+            getLastModified().toString(LAST_MODIFIED_DATE_FORMAT));
     }
 
     public void toggleMark() {
@@ -80,13 +94,21 @@ public class PathModel {
     }
 
     public String getName() {
+        return nameProperty.get();
+    }
+
+    public StringProperty nameProperty() {
+        return nameProperty;
+    }
+
+    private String formatNameFromPath() {
         if (parent) {
             return PARENT_NAME;
         }
         return path.getFileName().toString() + (isDirectory() ? "/" : "");
     }
 
-    public String getType() {
+    private String getType() {
         if (isDirectory()) {
             return DIR_INFO;
         }
@@ -94,7 +116,11 @@ public class PathModel {
         return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
     }
 
-    public long getSize() {
+    public StringProperty typeProperty() {
+        return typeProperty;
+    }
+
+    private long getSizeForFile() {
         if (isDirectory()) {
             return -1;
         }
@@ -104,6 +130,10 @@ public class PathModel {
             Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
             return -1;
         }
+    }
+
+    public StringProperty sizeValueProperty() {
+        return sizeValueProperty;
     }
 
     public boolean isMarked() {
@@ -118,16 +148,20 @@ public class PathModel {
         return markValueProperty;
     }
 
-    public boolean isDirectory() {
+    public final boolean isDirectory() {
         return Files.isDirectory(path);
     }
 
-    public DateTime getLastModified() {
+    public final DateTime getLastModified() {
         try {
             return new DateTime(Files.getLastModifiedTime(path).toMillis());
         } catch (IOException ex) {
             Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
+    }
+
+    public StringProperty lastModifiedProperty() {
+        return lastModifiedProperty;
     }
 }
