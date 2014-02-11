@@ -9,6 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import org.joda.time.DateTime;
 
 /**
@@ -19,8 +23,12 @@ public class PathModel {
 
     private static final String DIR_INFO = "<DIR>";
     private static final String PARENT_NAME = "..";
+    private static final String MARK_VALUE = "*";
     private final Path path;
     private final boolean parent;
+//	private boolean marked;
+    private final BooleanProperty markedProperty = new SimpleBooleanProperty(false);
+    private final StringProperty markValueProperty = new SimpleStringProperty();
 
     public PathModel(Path path) {
         this(path, false);
@@ -31,9 +39,30 @@ public class PathModel {
         this.parent = parent;
     }
 
+    public void toggleMark() {
+        if (parent) {
+            return;
+        }
+        updateMark(markedProperty.get() == false);
+    }
+
+    public void mark() {
+        updateMark(true);
+    }
+
+    private void updateMark(boolean mark) {
+        markedProperty.set(mark);
+        markValueProperty.set(mark ? MARK_VALUE : "");
+    }
+
     public void copyTo(Path directory) {
+        // TODO
+        if (isDirectory()) {
+            System.out.println("directory copy is not supported.");
+            return;
+        }
         try {
-            Files.copy(path, directory);
+            Files.copy(path, directory.resolve(path.getFileName()));
         } catch (IOException ex) {
             Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -75,6 +104,18 @@ public class PathModel {
             Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
             return -1;
         }
+    }
+
+    public boolean isMarked() {
+        return markedProperty.get();
+    }
+
+    public BooleanProperty markedProperty() {
+        return markedProperty;
+    }
+
+    public StringProperty markValueProperty() {
+        return markValueProperty;
     }
 
     public boolean isDirectory() {

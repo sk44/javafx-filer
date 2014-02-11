@@ -1,11 +1,11 @@
 .mainFxmlClass {
     /*-fx-font-family: 'Lucida Console', 'MigMix 1M';*/
     -fx-font-size: 11pt;
-	-fx-border-color: transparent;
+    -fx-border-color: transparent;
 }
 .background,
 .text-area {
-	-fx-border-color: transparent;
+    -fx-border-color: transparent;
 }
 
 .label {
@@ -19,8 +19,8 @@
 
 .table-view {
     -fx-table-cell-border-color: transparent;
-	-fx-background-color: transparent;
-	-fx-borer-color: transparent;
+    -fx-background-color: transparent;
+    -fx-borer-color: transparent;
 }
 
 .table-view .filler {
@@ -33,47 +33,51 @@
     -fx-border-color: transparent;
 }
 
+.table-view .marked, .table-cell .marked {
+    -fx-text-fill: #ff3333;
+}
+
 .table-view:focused .table-row-cell:filled:focused:selected {
-	-fx-background-color: rgba(153,153,153,0.8);
+    -fx-background-color: rgba(153,153,153,0.8);
 }
 
 .table-row-cell:empty,
 .table-row-cell:hover:empty {
-	-fx-background-color: transparent;
+    -fx-background-color: transparent;
 }
 
 .split-pane-divider {
-	-fx-background-color: #ffffff;
-	-fx-border-color: transparent;
-	-fx-padding: 0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
 }
 
 .split-pane > * > .split-pane-divider {
-	-fx-border-color: transparent transparent transparent transparent;
-	-fx-background-color: transparent, transparent;
-	-fx-background-insets: 0, 0 1 0 1;
+    -fx-border-color: transparent transparent transparent transparent;
+    -fx-background-color: transparent, transparent;
+    -fx-background-insets: 0, 0 1 0 1;
 }
 
 .scroll-bar {
-	-fx-background-color: transparent;
-	-fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
 .increment-button, .decrement-button {
-	-fx-background-color: #ffffff;
-	-fx-background-radius: 0;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0;
 }
 
 .scroll-bar .track {
-	-fx-background-color: #ffffff;
-	-fx-border-color: transparent;
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
 
-	-fx-background-radius: 0;
-	-fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .scroll-bar .thumb {
     -fx-background-color: #bbbbbb;
-	-fx-background-insets: 2, 0, 0;
-	-fx-background-radius: 2em;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
 }

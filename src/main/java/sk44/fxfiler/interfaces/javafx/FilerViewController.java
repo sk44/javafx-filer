@@ -34,235 +34,294 @@ import javafx.util.Callback;
  */
 public class FilerViewController implements Initializable {
 
-	@FXML
-	private Label currentPathLabel;
-	@FXML
-	private TableView<PathModel> filesView;
-	@FXML
-	private TableColumn<PathModel, String> nameColumn;
-	@FXML
-	private TableColumn<PathModel, String> typeColumn;
-	@FXML
-	private TableColumn<PathModel, String> sizeColumn;
-	@FXML
-	private TableColumn<PathModel, String> lastModifiedColumn;
-	private FilerViewController otherFilerView;
-	// TODO bind
-	private Path currentPath;
+    @FXML
+    private Label currentPathLabel;
+    @FXML
+    private TableView<PathModel> filesView;
+    @FXML
+    private TableColumn<PathModel, String> markColumn;
+    @FXML
+    private TableColumn<PathModel, String> nameColumn;
+    @FXML
+    private TableColumn<PathModel, String> typeColumn;
+    @FXML
+    private TableColumn<PathModel, String> sizeColumn;
+    @FXML
+    private TableColumn<PathModel, String> lastModifiedColumn;
+    private FilerViewController otherFilerView;
+    // TODO bind
+    private Path currentPath;
 
-	@FXML
-	protected void handleKeyPressedInTable(KeyEvent event) {
-		System.out.println("key pressed in table: " + event.getCode());
-		switch (event.getCode()) {
-			case C:
-				otherFilerView.copy(filesView.getSelectionModel().getSelectedItems());
-				break;
-			case G:
-				if (event.isShiftDown()) {
-					moveToLast();
-				} else {
-					moveToFirst();
-				}
-				break;
-			case H:
-			case LEFT:
-				moveTo(currentPath.getParent());
-				break;
-			case J:
-				moveToNext();
-				break;
-			case K:
-				moveToPrevious();
-				break;
-			case L:
-			case RIGHT:
-				goForward();
-				break;
-			case O:
-				// TODO
-				break;
-			case Q:
-				Platform.exit();
-				break;
-			case TAB:
-				otherFilerView.focus();
-				break;
-			case UP:
+    @FXML
+    protected void handleKeyPressedInTable(KeyEvent event) {
+//		System.out.println("key pressed in table: " + event.getCode());
+        switch (event.getCode()) {
+            case C:
+                copy();
+                break;
+            case G:
+                if (event.isShiftDown()) {
+                    moveToLast();
+                } else {
+                    moveToFirst();
+                }
+                break;
+            case H:
+            case LEFT:
+                moveTo(currentPath.getParent());
+                break;
+            case J:
+                moveToNext();
+                break;
+            case K:
+                if (event.isShiftDown()) {
+                    // TODO create directory
+                } else {
+                    moveToPrevious();
+                }
+                break;
+            case L:
+            case RIGHT:
+                goForward();
+                break;
+            case O:
+                // TODO
+                break;
+            case Q:
+                Platform.exit();
+                break;
+            case TAB:
+                otherFilerView.focus();
+                break;
+            case UP:
 //                focusPrevious();
-				break;
-			case DOWN:
-				// TODO
+                break;
+            case DOWN:
+                // TODO
 //                focusNext();
-				break;
-			case LESS:
-				moveTo(currentPath.getRoot());
-				break;
-			case X:
-			case ENTER:
-				if (event.isControlDown()) {
-					openAssosiated();
-				}
-				break;
-			case SPACE:
-//                toggleSelected();
-//                focusNext();
-				break;
-		}
-	}
+                break;
+            case LESS:
+                moveTo(currentPath.getRoot());
+                break;
+            case X:
+            case ENTER:
+                if (event.isControlDown()) {
+                    openAssosiated();
+                }
+                break;
+            case SPACE:
+                toggleSelected();
+                moveToNext();
+                break;
+        }
+    }
 
-	void withOtherFilerView(FilerViewController other) {
-		otherFilerView = other;
-	}
+    void withOtherFilerView(FilerViewController other) {
+        otherFilerView = other;
+    }
 
-	void copy(List<PathModel> pathes) {
-		// TODO
-		for (PathModel pathModel : pathes) {
-			pathModel.copyTo(currentPath);
-		}
-	}
+    List<PathModel> collectMarkedItems() {
+        List<PathModel> results = new ArrayList<>();
+        for (PathModel model : filesView.getItems()) {
+            if (model.isMarked()) {
+                results.add(model);
+            }
+        }
+        return results;
+    }
 
-	void focus() {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				filesView.requestFocus();
-			}
-		});
-	}
+    void copy() {
+        otherFilerView.copyFrom(collectMarkedItems());
+    }
 
-	@Override
-	public void initialize(URL url, ResourceBundle rb) {
-		filesView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//		filesView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-				return new SimpleStringProperty(p.getValue().getName());
-			}
-		});
-		typeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-				return new SimpleStringProperty(p.getValue().getType());
-			}
-		});
-		sizeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-				if (p.getValue().isDirectory()) {
-					return new SimpleStringProperty("");
-				}
-				return new SimpleStringProperty(FileSizeFormatter.format(p.getValue().getSize()));
-			}
-		});
-		sizeColumn.setCellFactory(new TextAlignmentCellFactory<PathModel>(TextAlignmentCellFactory.Alignment.RIGHT));
-		lastModifiedColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-				return new SimpleStringProperty(p.getValue().getLastModified().toString("yy/MM/dd HH:mm:ss"));
-			}
-		});
-		// automatic width
-		nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(280));
-	}
+    void copyFrom(List<PathModel> pathes) {
+        for (PathModel pathModel : pathes) {
+            pathModel.copyTo(currentPath);
+        }
+        refresh();
+    }
 
-	private void moveToPrevious() {
-		final int index = filesView.getSelectionModel().getSelectedIndex();
-		moveToIndex(index - 1);
-		scrollToFocused();
-	}
+    void focus() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                filesView.requestFocus();
+            }
+        });
+    }
 
-	private void moveToNext() {
-		final int index = filesView.getSelectionModel().getSelectedIndex();
-		moveToIndex(index + 1);
-		scrollToFocused();
-	}
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        filesView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+//        filesView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        markColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
 
-	private void moveToFirst() {
-		moveToIndex(0);
-		scrollToFocused();
-	}
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
+                return p.getValue().markValueProperty();
+            }
+        });
+        nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(final TableColumn.CellDataFeatures<PathModel, String> p) {
+                return new SimpleStringProperty(p.getValue().getName());
+            }
+        });
+        // TODO 動かん
+        // http://stackoverflow.com/questions/16153838/updating-tableview-row-appearance
+//        markColumn.setCellFactory(new Callback<TableColumn<PathModel, String>, TableCell<PathModel, String>>() {
+//            @Override
+//            public TableCell<PathModel, String> call(TableColumn<PathModel, String> p) {
+//                return new TableCell<PathModel, String>() {
+//                    @Override
+//                    protected void updateItem(String t, boolean bln) {
+//                        super.updateItem(t, bln);
+//                        int index = getIndex();
+//                        if (index < getTableView().getItems().size()) {
+//                            PathModel m = getTableView().getItems().get(index);
+//                            if (m.isMarked()) {
+//                                getStyleClass().add("marked");
+//                                getTableRow().getStyleClass().add("marked");
+//                            } else {
+//                                getStyleClass().remove("marked");
+//                                getTableRow().getStyleClass().remove("marked");
+//                            }
+//                        }
+//                        setText(t);
+//                    }
+//
+//                };
+//            }
+//        });
+        typeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
+                return new SimpleStringProperty(p.getValue().getType());
+            }
+        });
+        sizeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
+                if (p.getValue().isDirectory()) {
+                    return new SimpleStringProperty("");
+                }
+                return new SimpleStringProperty(FileSizeFormatter.format(p.getValue().getSize()));
+            }
+        });
+        sizeColumn.setCellFactory(new TextAlignmentCellFactory<PathModel>(TextAlignmentCellFactory.Alignment.RIGHT));
+        lastModifiedColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
+                return new SimpleStringProperty(p.getValue().getLastModified().toString("yy/MM/dd HH:mm:ss"));
+            }
+        });
+        // automatic width
+        nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(280));
+    }
 
-	private void moveToLast() {
-		moveToIndex(countItems() - 1);
-		scrollToFocused();
-	}
+    private void moveToPrevious() {
+//        final int index = filesView.getSelectionModel().getSelectedIndex();
+        final int index = getCurrentIndex();
+        moveToIndex(index - 1);
+        scrollToFocused();
+    }
 
-	private void moveToIndex(int index) {
-		if (index < 0 || countItems() - 1 < index) {
-			return;
-		}
-		filesView.getSelectionModel().clearAndSelect(index);
-		filesView.getFocusModel().focus(index);
-	}
+    private void moveToNext() {
+//        final int index = filesView.getSelectionModel().getSelectedIndex();
+        final int index = getCurrentIndex();
+        moveToIndex(index + 1);
+        scrollToFocused();
+    }
 
-	private int countItems() {
-		return filesView.getItems().size();
-	}
+    private void moveToFirst() {
+        moveToIndex(0);
+        scrollToFocused();
+    }
 
-	private void scrollToFocused() {
-		filesView.scrollTo(filesView.getFocusModel().getFocusedIndex());
-	}
+    private void moveToLast() {
+        moveToIndex(countItems() - 1);
+        scrollToFocused();
+    }
 
-	private void goForward() {
-		moveTo(filesView.getFocusModel().getFocusedItem().getDirectoryPath());
-	}
+    private int getCurrentIndex() {
+        return filesView.getFocusModel().getFocusedIndex();
+    }
 
-	private void openAssosiated() {
-		PathModel pathModel = filesView.getFocusModel().getFocusedItem();
-		if (pathModel == null) {
-			return;
-		}
-		try {
-			Desktop.getDesktop().open(pathModel.getPath().toFile());
-		} catch (IOException ex) {
-			Logger.getLogger(FilerViewController.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+    private void moveToIndex(int index) {
+        if (index < 0 || countItems() - 1 < index) {
+            return;
+        }
+        filesView.getSelectionModel().clearAndSelect(index);
+        filesView.getFocusModel().focus(index);
+    }
 
-	private void toggleSelected() {
-		PathModel pathModel = filesView.getFocusModel().getFocusedItem();
-		if (pathModel == null) {
-			return;
-		}
-		int focusedIndex = filesView.getFocusModel().getFocusedIndex();
-		if (filesView.getSelectionModel().getSelectedIndices().contains(focusedIndex)) {
-			filesView.getSelectionModel().clearSelection(focusedIndex);
-		} else {
-			filesView.getSelectionModel().select(focusedIndex);
-		}
-	}
+    private int countItems() {
+        return filesView.getItems().size();
+    }
 
-	void moveTo(Path path) {
-		if (path == null) {
-			return;
-		}
-		updateCurrentPath(path);
-		filesView.getItems().clear();
-		Path parent = currentPath.getParent();
-		if (parent != null) {
-			filesView.getItems().add(new PathModel(parent, true));
-		}
-		List<PathModel> entries = new ArrayList<>();
+    private void scrollToFocused() {
+        filesView.scrollTo(filesView.getFocusModel().getFocusedIndex());
+    }
 
-		try {
-			try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentPath)) {
-				for (Path entry : stream) {
-					entries.add(new PathModel(entry));
-				}
-			}
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		Collections.sort(entries, PathModelComparators.BY_DEFAULT);
-		filesView.getItems().addAll(entries);
-		moveToFirst();
-	}
+    private void goForward() {
+        moveTo(filesView.getFocusModel().getFocusedItem().getDirectoryPath());
+    }
 
-	private void updateCurrentPath(Path path) {
-		// これやらないと相対になったり parent が取れなかったり
-		Path normalizedPath = path.toAbsolutePath().normalize();
-		currentPath = normalizedPath;
-		currentPathLabel.setText(normalizedPath.toString());
-	}
+    private void openAssosiated() {
+        PathModel pathModel = filesView.getFocusModel().getFocusedItem();
+        if (pathModel == null) {
+            return;
+        }
+        try {
+            Desktop.getDesktop().open(pathModel.getPath().toFile());
+        } catch (IOException ex) {
+            Logger.getLogger(FilerViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void toggleSelected() {
+        PathModel pathModel = filesView.getFocusModel().getFocusedItem();
+        if (pathModel == null) {
+            return;
+        }
+        filesView.getSelectionModel().select(pathModel);
+        pathModel.toggleMark();
+    }
+
+    void refresh() {
+        moveTo(currentPath);
+    }
+
+    void moveTo(Path path) {
+        if (path == null) {
+            return;
+        }
+        updateCurrentPath(path);
+        filesView.getItems().clear();
+        Path parent = currentPath.getParent();
+        if (parent != null) {
+            filesView.getItems().add(new PathModel(parent, true));
+        }
+        List<PathModel> entries = new ArrayList<>();
+
+        try {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentPath)) {
+                for (Path entry : stream) {
+                    entries.add(new PathModel(entry));
+                }
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        Collections.sort(entries, PathModelComparators.BY_DEFAULT);
+        filesView.getItems().addAll(entries);
+        moveToFirst();
+    }
+
+    private void updateCurrentPath(Path path) {
+        // これやらないと相対になったり parent が取れなかったり
+        Path normalizedPath = path.toAbsolutePath().normalize();
+        currentPath = normalizedPath;
+        currentPathLabel.setText(normalizedPath.toString());
+    }
 }
