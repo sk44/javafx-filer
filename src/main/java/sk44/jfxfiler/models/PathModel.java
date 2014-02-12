@@ -16,9 +16,9 @@ import javafx.beans.property.StringProperty;
 import org.joda.time.DateTime;
 
 /**
+ * filer path model.
  *
- *import sk44.fxfiler.interfaces.javafx.FileSizeFormatter;
- @author sk
+ * @author sk
  */
 public class PathModel {
 
@@ -26,7 +26,7 @@ public class PathModel {
     private static final String PARENT_NAME = "..";
     private static final String MARK_VALUE = "*";
     private static final String SIZE_VALUE_FOR_DIR = "";
-    private static final String LAST_MODIFIED_DATE_FORMAT = "yy/MM/dd HH:mm:ss";
+    private static final String LAST_MODIFIED_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
     private final Path path;
     private final boolean parent;
     private final BooleanProperty markedProperty = new SimpleBooleanProperty(false);

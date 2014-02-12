@@ -190,7 +190,7 @@ public class FilerViewController implements Initializable {
             }
         });
         // automatic width
-        nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(280));
+        nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(295));
     }
 
     private void moveToPrevious() {
