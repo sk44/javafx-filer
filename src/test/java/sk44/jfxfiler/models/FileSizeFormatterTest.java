@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sk44.fxfiler.interfaces.javafx;
+package sk44.jfxfiler.models;
 
+import sk44.jfxfiler.models.FileSizeFormatter;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import org.junit.experimental.theories.DataPoints;

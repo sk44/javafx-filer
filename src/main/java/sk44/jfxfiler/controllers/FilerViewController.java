@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sk44.fxfiler.interfaces.javafx;
+package sk44.jfxfiler.controllers;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -17,7 +17,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,6 +26,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import sk44.jfxfiler.models.PathModel;
+import sk44.jfxfiler.models.PathModelComparators;
+import sk44.jfxfiler.views.TextAlignmentCellFactory;
 
 /**
  *
@@ -161,62 +163,34 @@ public class FilerViewController implements Initializable {
                 return p.getValue().markValueProperty();
             }
         });
+        markColumn.setCellFactory(new TextAlignmentCellFactory<PathModel>(TextAlignmentCellFactory.Alignment.RIGHT));
         nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(final TableColumn.CellDataFeatures<PathModel, String> p) {
-                return new SimpleStringProperty(p.getValue().getName());
+                return p.getValue().nameProperty();
             }
         });
-        // TODO 動かん
-        // http://stackoverflow.com/questions/16153838/updating-tableview-row-appearance
-//        markColumn.setCellFactory(new Callback<TableColumn<PathModel, String>, TableCell<PathModel, String>>() {
-//            @Override
-//            public TableCell<PathModel, String> call(TableColumn<PathModel, String> p) {
-//                return new TableCell<PathModel, String>() {
-//                    @Override
-//                    protected void updateItem(String t, boolean bln) {
-//                        super.updateItem(t, bln);
-//                        int index = getIndex();
-//                        if (index < getTableView().getItems().size()) {
-//                            PathModel m = getTableView().getItems().get(index);
-//                            if (m.isMarked()) {
-//                                getStyleClass().add("marked");
-//                                getTableRow().getStyleClass().add("marked");
-//                            } else {
-//                                getStyleClass().remove("marked");
-//                                getTableRow().getStyleClass().remove("marked");
-//                            }
-//                        }
-//                        setText(t);
-//                    }
-//
-//                };
-//            }
-//        });
         typeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-                return new SimpleStringProperty(p.getValue().getType());
+                return p.getValue().typeProperty();
             }
         });
         sizeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-                if (p.getValue().isDirectory()) {
-                    return new SimpleStringProperty("");
-                }
-                return new SimpleStringProperty(FileSizeFormatter.format(p.getValue().getSize()));
+                return p.getValue().sizeValueProperty();
             }
         });
         sizeColumn.setCellFactory(new TextAlignmentCellFactory<PathModel>(TextAlignmentCellFactory.Alignment.RIGHT));
         lastModifiedColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-                return new SimpleStringProperty(p.getValue().getLastModified().toString("yy/MM/dd HH:mm:ss"));
+                return p.getValue().lastModifiedProperty();
             }
         });
         // automatic width
-        nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(280));
+        nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(295));
     }
 
     private void moveToPrevious() {
