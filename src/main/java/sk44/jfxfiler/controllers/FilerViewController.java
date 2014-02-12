@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sk44.fxfiler.interfaces.javafx;
+package sk44.jfxfiler.controllers;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -26,6 +26,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import sk44.jfxfiler.models.PathModel;
+import sk44.jfxfiler.models.PathModelComparators;
+import sk44.jfxfiler.views.TextAlignmentCellFactory;
 
 /**
  *
@@ -160,6 +163,7 @@ public class FilerViewController implements Initializable {
                 return p.getValue().markValueProperty();
             }
         });
+        markColumn.setCellFactory(new TextAlignmentCellFactory<PathModel>(TextAlignmentCellFactory.Alignment.RIGHT));
         nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(final TableColumn.CellDataFeatures<PathModel, String> p) {

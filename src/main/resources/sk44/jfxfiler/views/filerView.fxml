@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="313.0" prefWidth="448.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sk44.jfxfiler.controllers.FilerViewController">
+    <children>
+        <VBox prefHeight="200.0" prefWidth="100.0" styleClass="background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Label id="currentPath" fx:id="currentPathLabel" maxHeight="20.0" minHeight="20.0" prefHeight="20.0" text="Label">
+                    <VBox.margin>
+                        <Insets left="5.0" fx:id="x1" />
+                    </VBox.margin>
+                </Label>
+                <TableView fx:id="filesView" onKeyPressed="#handleKeyPressedInTable">
+                    <columns>
+                        <TableColumn id="markColumn" maxWidth="15.0" minWidth="15.0" prefWidth="15.0" style="" styleClass="marked" text="Column X" fx:id="markColumn" />
+                        <TableColumn prefWidth="75.0" sortable="false" text="列X" fx:id="nameColumn" />
+                        <TableColumn id="typeColumn" maxWidth="75.0" prefWidth="75.0" text="列X" fx:id="typeColumn" />
+                        <TableColumn id="infoColumn" maxWidth="50.0" prefWidth="50.0" sortable="false" text="列X" fx:id="sizeColumn" />
+                        <TableColumn id="lastModifiedColumn" maxWidth="150.0" prefWidth="150.0" sortable="false" text="列X" fx:id="lastModifiedColumn" />
+                    </columns>
+                    <VBox.margin>
+                        <Insets />
+                    </VBox.margin>
+                </TableView>
+                <Label maxHeight="20.0" minHeight="20.0" prefHeight="20.0" text="Label" VBox.margin="$x1" />
+            </children>
+        </VBox>
+    </children>
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
+</AnchorPane>

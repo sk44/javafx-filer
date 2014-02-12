@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package sk44.fxfiler.interfaces.javafx;
+package sk44.jfxfiler.models;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +17,8 @@ import org.joda.time.DateTime;
 
 /**
  *
- * @author sk
+ *import sk44.fxfiler.interfaces.javafx.FileSizeFormatter;
+ @author sk
  */
 public class PathModel {
 

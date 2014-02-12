@@ -6,11 +6,11 @@ defaultTasks 'clean', 'assemble'
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-group = 'sk44.fxfiler'
+group = 'sk44.jfxfiler'
 version = '1.0.0-SNAPSHOT'
 
 javafx {
-    mainClass = 'sk44.fxfiler.FilerApplication'
+    mainClass = 'sk44.jfxfiler.FilerApplication'
 }
 
 repositories {

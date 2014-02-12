@@ -1,4 +1,4 @@
-package sk44.fxfiler;
+package sk44.jfxfiler;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,7 @@ public class FilerApplication extends Application {
     public void start(Stage stage) throws Exception {
         stage.setTitle("Filer");
         Scene scene = new Scene((Pane) FXMLLoader
-            .load(getClass().getResource("interfaces/javafx/mainWindow.fxml")));
+            .load(getClass().getResource("views/mainWindow.fxml")));
         stage.setScene(scene);
         stage.show();
     }
