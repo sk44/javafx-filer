@@ -7,8 +7,6 @@ package sk44.jfxfiler.models;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -73,13 +71,15 @@ public class PathModel {
     public void copyTo(Path directory) {
         // TODO
         if (isDirectory()) {
-            System.out.println("directory copy is not supported.");
+            MessageModel.warn("directory copy does not implemented yet.");
             return;
         }
         try {
             Files.copy(path, directory.resolve(path.getFileName()));
+            MessageModel.info(
+                "copy " + nameProperty.get() + " to " + directory.toString());
         } catch (IOException ex) {
-            Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
+            MessageModel.error(ex);
         }
     }
 
@@ -128,7 +128,7 @@ public class PathModel {
         try {
             return Files.size(path);
         } catch (IOException ex) {
-            Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
+            MessageModel.error(ex);
             return -1;
         }
     }
@@ -157,7 +157,7 @@ public class PathModel {
         try {
             return new DateTime(Files.getLastModifiedTime(path).toMillis());
         } catch (IOException ex) {
-            Logger.getLogger(PathModel.class.getName()).log(Level.SEVERE, null, ex);
+            MessageModel.error(ex);
             return null;
         }
     }

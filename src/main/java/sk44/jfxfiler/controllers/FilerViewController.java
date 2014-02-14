@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -26,6 +24,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import sk44.jfxfiler.models.MessageModel;
 import sk44.jfxfiler.models.PathModel;
 import sk44.jfxfiler.models.PathModelComparators;
 import sk44.jfxfiler.views.TextAlignmentCellFactory;
@@ -56,7 +55,6 @@ public class FilerViewController implements Initializable {
 
     @FXML
     protected void handleKeyPressedInTable(KeyEvent event) {
-//		System.out.println("key pressed in table: " + event.getCode());
         switch (event.getCode()) {
             case C:
                 copy();
@@ -78,6 +76,7 @@ public class FilerViewController implements Initializable {
             case K:
                 if (event.isShiftDown()) {
                     // TODO create directory
+                    MessageModel.info("create directory.");
                 } else {
                     moveToPrevious();
                 }
@@ -248,8 +247,8 @@ public class FilerViewController implements Initializable {
         }
         try {
             Desktop.getDesktop().open(pathModel.getPath().toFile());
-        } catch (IOException ex) {
-            Logger.getLogger(FilerViewController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | RuntimeException ex) {
+            MessageModel.error(ex);
         }
     }
 
@@ -285,6 +284,7 @@ public class FilerViewController implements Initializable {
                 }
             }
         } catch (IOException ex) {
+            MessageModel.error(ex);
             throw new RuntimeException(ex);
         }
         Collections.sort(entries, PathModelComparators.BY_DEFAULT);
