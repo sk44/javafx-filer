@@ -4,8 +4,7 @@
  */
 package sk44.jfxfiler.models;
 
-import sk44.jfxfiler.models.FileSizeFormatter;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
@@ -29,6 +28,7 @@ public class FileSizeFormatterTest {
             this.expected = expected;
         }
     }
+
     @DataPoints
     public static Fixture[] FIXTURES = {
         new Fixture(999, "999B"),

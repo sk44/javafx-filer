@@ -20,7 +20,7 @@
         <TableColumn id="lastModifiedColumn" maxWidth="150.0" prefWidth="150.0" sortable="false" text="lastModified" fx:id="lastModifiedColumn" />
       </columns>
     </TableView>
-    <Label maxHeight="20.0" minHeight="20.0" prefHeight="20.0" text="Label" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+    <TextField fx:id="commandField" maxHeight="20.0" minHeight="20.0" onAction="#handleCommandAction" onKeyPressed="#handleCommandKeyPressed" prefHeight="20.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
   </children>
   <stylesheets>
     <URL value="@style.css" />

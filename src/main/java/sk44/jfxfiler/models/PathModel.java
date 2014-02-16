@@ -7,6 +7,7 @@ package sk44.jfxfiler.models;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -79,6 +80,22 @@ public class PathModel {
             MessageModel.info(
                 "copy " + nameProperty.get() + " to " + directory.toString());
         } catch (IOException ex) {
+            MessageModel.error(ex);
+        }
+    }
+
+    public void delete() {
+        // TODO 再帰的に消せるようにする
+        // http://stackoverflow.com/questions/779519/delete-files-recursively-in-java
+        try {
+            boolean deleted = Files.deleteIfExists(path);
+            if (deleted) {
+                MessageModel.info(path.toString() + " was successfully deleted.");
+            } else {
+                MessageModel.warn("deleting " + path.toString() + " was failed.");
+            }
+        } catch (IOException ex) {
+            MessageModel.error("an error occured during deleting " + path.toString());
             MessageModel.error(ex);
         }
     }
@@ -165,4 +182,29 @@ public class PathModel {
     public StringProperty lastModifiedProperty() {
         return lastModifiedProperty;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PathModel other = (PathModel) obj;
+        if (!Objects.equals(this.path, other.path)) {
+            return false;
+        }
+        if (this.parent != other.parent) {
+            return false;
+        }
+        return true;
+    }
+
 }

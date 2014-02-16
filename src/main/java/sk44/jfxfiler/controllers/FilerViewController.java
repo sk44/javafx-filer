@@ -7,26 +7,25 @@ package sk44.jfxfiler.controllers;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import sk44.jfxfiler.models.CommandLineViewModel;
+import sk44.jfxfiler.models.FilesViewModel;
 import sk44.jfxfiler.models.MessageModel;
 import sk44.jfxfiler.models.PathModel;
-import sk44.jfxfiler.models.PathModelComparators;
 import sk44.jfxfiler.views.TextAlignmentCellFactory;
 
 /**
@@ -34,6 +33,10 @@ import sk44.jfxfiler.views.TextAlignmentCellFactory;
  * @author sk
  */
 public class FilerViewController implements Initializable {
+
+    private static Path normalizePath(Path path) {
+        return path.toAbsolutePath().normalize();
+    }
 
     @FXML
     private Label currentPathLabel;
@@ -49,9 +52,32 @@ public class FilerViewController implements Initializable {
     private TableColumn<PathModel, String> sizeColumn;
     @FXML
     private TableColumn<PathModel, String> lastModifiedColumn;
+    @FXML
+    private TextField commandField;
     private FilerViewController otherFilerView;
-    // TODO bind
-    private Path currentPath;
+    private final FilesViewModel filesViewModel = new FilesViewModel();
+    private final CommandLineViewModel commandLineViewModel = new CommandLineViewModel();
+
+    @FXML
+    protected void handleCommandAction(ActionEvent event) {
+        commandLineViewModel.executeCommand(filesViewModel.getCurrentPath());
+        focus();
+        refresh();
+    }
+
+    @FXML
+    protected void handleCommandKeyPressed(KeyEvent event) {
+        switch (event.getCode()) {
+            case ESCAPE:
+                commandLineViewModel.exitCommandMode();
+                focus();
+                break;
+            case TAB:
+                commandLineViewModel.exitCommandMode();
+                otherFilerView.focus();
+                break;
+        }
+    }
 
     @FXML
     protected void handleKeyPressedInTable(KeyEvent event) {
@@ -59,60 +85,69 @@ public class FilerViewController implements Initializable {
             case C:
                 copy();
                 break;
+            case D:
+                delete();
+                break;
             case G:
                 if (event.isShiftDown()) {
-                    moveToLast();
+                    selectLast();
                 } else {
-                    moveToFirst();
+                    selectFirst();
                 }
                 break;
             case H:
             case LEFT:
-                moveTo(currentPath.getParent());
+                moveTo(filesViewModel.getParentPath(), true);
                 break;
             case J:
-                moveToNext();
+                selectNext();
                 break;
             case K:
-                if (event.isShiftDown()) {
-                    // TODO create directory
-                    MessageModel.info("create directory.");
-                } else {
-                    moveToPrevious();
-                }
+                selectPrevious();
                 break;
             case L:
-            case RIGHT:
                 goForward();
+                break;
+            case M:
+                // TODO "M" が入力されてしまう
+//                if (event.isShiftDown()) {
+                if (event.isControlDown()) {
+                    event.consume();
+                    showDirectoryNameCommand();
+                }
                 break;
             case O:
                 // TODO
+                if (event.isShiftDown()) {
+                    otherFilerView.moveTo(filesViewModel.getCurrentPath());
+                }
                 break;
             case Q:
                 Platform.exit();
                 break;
-            case TAB:
-                otherFilerView.focus();
-                break;
-            case UP:
-//                focusPrevious();
-                break;
-            case DOWN:
-                // TODO
-//                focusNext();
-                break;
-            case LESS:
-                moveTo(currentPath.getRoot());
-                break;
             case X:
+                openAssosiated();
+                break;
+            case Y:
+                filesViewModel.yankCurrentPath();
+                break;
             case ENTER:
                 if (event.isControlDown()) {
                     openAssosiated();
                 }
                 break;
             case SPACE:
-                toggleSelected();
-                moveToNext();
+                filesViewModel.toggleSelected();
+                selectNext();
+                break;
+            case RIGHT:
+                goForward();
+                break;
+            case TAB:
+                otherFilerView.focus();
+                break;
+            case LESS:
+                moveTo(filesViewModel.getRootPath());
                 break;
         }
     }
@@ -121,24 +156,17 @@ public class FilerViewController implements Initializable {
         otherFilerView = other;
     }
 
-    List<PathModel> collectMarkedItems() {
-        List<PathModel> results = new ArrayList<>();
-        for (PathModel model : filesView.getItems()) {
-            if (model.isMarked()) {
-                results.add(model);
-            }
-        }
-        return results;
-    }
-
     void copy() {
-        otherFilerView.copyFrom(collectMarkedItems());
+        otherFilerView.copyFrom(filesViewModel.collectMarked());
     }
 
     void copyFrom(List<PathModel> pathes) {
-        for (PathModel pathModel : pathes) {
-            pathModel.copyTo(currentPath);
-        }
+        filesViewModel.copyFrom(pathes);
+        refresh();
+    }
+
+    void delete() {
+        filesViewModel.deleteMarked();
         refresh();
     }
 
@@ -153,8 +181,14 @@ public class FilerViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
         filesView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        filesView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        filesView.setItems(filesViewModel.getFiles());
+        // 右辺にからじゃないものをしていするひつようがある
+        filesViewModel.focusModelProperty().bindBidirectional(filesView.focusModelProperty());
+        filesViewModel.selectionModelProperty().bindBidirectional(filesView.selectionModelProperty());
+        currentPathLabel.textProperty().bind(filesViewModel.currentPathValueProperty());
+
         markColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
 
             @Override
@@ -190,58 +224,60 @@ public class FilerViewController implements Initializable {
         });
         // automatic width
         nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(295));
+
+        commandField.disableProperty().bind(commandLineViewModel.commandModeProperty().not());
+        commandField.textProperty().bindBidirectional(commandLineViewModel.commandProperty());
     }
 
-    private void moveToPrevious() {
-//        final int index = filesView.getSelectionModel().getSelectedIndex();
-        final int index = getCurrentIndex();
-        moveToIndex(index - 1);
+    private void showDirectoryNameCommand() {
+        commandLineViewModel.enterCommandMode(CommandLineViewModel.Command.CREATE_DIRECTORY);
+        commandField.requestFocus();
+    }
+
+    private void selectPrevious() {
+        final int index = filesViewModel.getFocusedIndex();
+        filesViewModel.select(index - 1);
         scrollToFocused();
     }
 
-    private void moveToNext() {
-//        final int index = filesView.getSelectionModel().getSelectedIndex();
-        final int index = getCurrentIndex();
-        moveToIndex(index + 1);
+    private void selectNext() {
+        final int index = filesViewModel.getFocusedIndex();
+        filesViewModel.select(index + 1);
         scrollToFocused();
     }
 
-    private void moveToFirst() {
-        moveToIndex(0);
+    private void selectFirst() {
+        filesViewModel.select(0);
         scrollToFocused();
     }
 
-    private void moveToLast() {
-        moveToIndex(countItems() - 1);
+    private void selectLast() {
+        filesViewModel.select(filesViewModel.count() - 1);
         scrollToFocused();
-    }
-
-    private int getCurrentIndex() {
-        return filesView.getFocusModel().getFocusedIndex();
-    }
-
-    private void moveToIndex(int index) {
-        if (index < 0 || countItems() - 1 < index) {
-            return;
-        }
-        filesView.getSelectionModel().clearAndSelect(index);
-        filesView.getFocusModel().focus(index);
-    }
-
-    private int countItems() {
-        return filesView.getItems().size();
     }
 
     private void scrollToFocused() {
-        filesView.scrollTo(filesView.getFocusModel().getFocusedIndex());
+        // runLater 内でスクロールを呼ばないと変な位置にスクロールしてしまう
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                filesView.scrollTo(filesViewModel.getFocusedIndex());
+            }
+        });
     }
 
     private void goForward() {
-        moveTo(filesView.getFocusModel().getFocusedItem().getDirectoryPath());
+        moveTo(filesViewModel.getFocusedModel().getDirectoryPath());
     }
 
     private void openAssosiated() {
-        PathModel pathModel = filesView.getFocusModel().getFocusedItem();
+        // TODO Mac で Desktop.getDesktop をサポートしてない疑い
+        // http://stackoverflow.com/questions/14964376/java-getdesktop-open-works-in-windows-but-doesnt-work-in-mac
+        if (Desktop.isDesktopSupported() == false) {
+            MessageModel.warn("Desktop.getDesktop() does not supported.");
+            return;
+        }
+        PathModel pathModel = filesViewModel.getFocusedModel();
         if (pathModel == null) {
             return;
         }
@@ -252,50 +288,21 @@ public class FilerViewController implements Initializable {
         }
     }
 
-    private void toggleSelected() {
-        PathModel pathModel = filesView.getFocusModel().getFocusedItem();
-        if (pathModel == null) {
-            return;
-        }
-        filesView.getSelectionModel().select(pathModel);
-        pathModel.toggleMark();
-    }
-
     void refresh() {
-        moveTo(currentPath);
+        moveTo(filesViewModel.getCurrentPath());
     }
 
     void moveTo(Path path) {
+        moveTo(path, false);
+    }
+
+    void moveTo(Path path, boolean goParent) {
         if (path == null) {
             return;
         }
-        updateCurrentPath(path);
-        filesView.getItems().clear();
-        Path parent = currentPath.getParent();
-        if (parent != null) {
-            filesView.getItems().add(new PathModel(parent, true));
-        }
-        List<PathModel> entries = new ArrayList<>();
-
-        try {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentPath)) {
-                for (Path entry : stream) {
-                    entries.add(new PathModel(entry));
-                }
-            }
-        } catch (IOException ex) {
-            MessageModel.error(ex);
-            throw new RuntimeException(ex);
-        }
-        Collections.sort(entries, PathModelComparators.BY_DEFAULT);
-        filesView.getItems().addAll(entries);
-        moveToFirst();
+        filesViewModel.moveTo(path, goParent);
+//        selectFirst();
+        scrollToFocused();
     }
 
-    private void updateCurrentPath(Path path) {
-        // これやらないと相対になったり parent が取れなかったり
-        Path normalizedPath = path.toAbsolutePath().normalize();
-        currentPath = normalizedPath;
-        currentPathLabel.setText(normalizedPath.toString());
-    }
 }
