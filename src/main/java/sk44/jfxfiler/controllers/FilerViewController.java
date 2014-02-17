@@ -112,7 +112,7 @@ public class FilerViewController implements Initializable {
                 // TODO "M" が入力されてしまう
 //                if (event.isShiftDown()) {
                 if (event.isControlDown()) {
-                    event.consume();
+//                    event.consume();
                     showDirectoryNameCommand();
                 }
                 break;
@@ -227,11 +227,13 @@ public class FilerViewController implements Initializable {
 
         commandField.disableProperty().bind(commandLineViewModel.commandModeProperty().not());
         commandField.textProperty().bindBidirectional(commandLineViewModel.commandProperty());
+        commandField.promptTextProperty().bind(commandLineViewModel.commandPromptTextProperty());
     }
 
     private void showDirectoryNameCommand() {
         commandLineViewModel.enterCommandMode(CommandLineViewModel.Command.CREATE_DIRECTORY);
         commandField.requestFocus();
+        MessageModel.info(commandField.getPromptText());
     }
 
     private void selectPrevious() {

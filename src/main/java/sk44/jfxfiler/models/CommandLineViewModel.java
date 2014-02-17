@@ -21,17 +21,24 @@ public class CommandLineViewModel {
 
     public enum Command {
 
-        // TODO つかう
-        CREATE_DIRECTORY;
+        CREATE_DIRECTORY("Enter new directory name.");
+
+        private final String promptText;
+
+        private Command(String promptText) {
+            this.promptText = promptText;
+        }
     }
 
     private Command command;
     private final BooleanProperty commandModeProperty = new SimpleBooleanProperty(false);
     private final StringProperty commandProperty = new SimpleStringProperty();
+    private final StringProperty commandPromptTextProperty = new SimpleStringProperty();
 
     public void enterCommandMode(Command command) {
         this.command = command;
         commandModeProperty.set(true);
+        commandPromptTextProperty.set(command.promptText);
         commandProperty.set("");
     }
 
@@ -57,6 +64,7 @@ public class CommandLineViewModel {
     public void exitCommandMode() {
         commandModeProperty.set(false);
         commandProperty.set("");
+        commandPromptTextProperty.set("");
     }
 
     public boolean isCommandSet() {
@@ -70,6 +78,10 @@ public class CommandLineViewModel {
 
     public StringProperty commandProperty() {
         return commandProperty;
+    }
+
+    public StringProperty commandPromptTextProperty() {
+        return commandPromptTextProperty;
     }
 
 }
