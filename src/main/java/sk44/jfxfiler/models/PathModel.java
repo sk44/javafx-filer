@@ -70,7 +70,11 @@ public class PathModel {
     }
 
     public boolean isMatch(String pattern) {
-        return nameProperty.get().contains(pattern);
+        if (pattern == null) {
+            return true;
+        }
+        String name = nameProperty.get().toLowerCase();
+        return name.contains(pattern.toLowerCase());
     }
 
     public void copyTo(Path directory) {

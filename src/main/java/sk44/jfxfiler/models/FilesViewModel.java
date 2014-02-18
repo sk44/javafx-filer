@@ -128,11 +128,13 @@ public class FilesViewModel {
     }
 
     public void selectNext(String pattern) {
-        List<PathModel> subList = files.subList(getFocusedIndex(), files.size() - 1);
-        for (PathModel p : subList) {
-            if (p.isMatch(pattern)) {
-                select(p);
-                return;
+        if (getFocusedIndex() + 1 < count()) {
+            List<PathModel> subList = files.subList(getFocusedIndex() + 1, count());
+            for (PathModel p : subList) {
+                if (p.isMatch(pattern)) {
+                    select(p);
+                    return;
+                }
             }
         }
         MessageModel.info("Search to bottom.");

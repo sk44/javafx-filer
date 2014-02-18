@@ -41,7 +41,8 @@ public class CommandLineViewModel {
         SEARCH("Enter search keyword.") {
                 @Override
                 void execute(CommandLineViewModel model, FilesViewModel filesViewModel) {
-                    filesViewModel.selectNext(model.commandProperty().get());
+                    model.lastSearchPattern = model.commandProperty.get();
+                    filesViewModel.selectNext(model.lastSearchPattern);
                 }
             };
 
@@ -58,6 +59,7 @@ public class CommandLineViewModel {
     private final BooleanProperty commandModeProperty = new SimpleBooleanProperty(false);
     private final StringProperty commandProperty = new SimpleStringProperty();
     private final StringProperty commandPromptTextProperty = new SimpleStringProperty();
+    private String lastSearchPattern;
 
     public void enterCommandMode(Command command) {
         this.command = command;
@@ -81,6 +83,15 @@ public class CommandLineViewModel {
             commandProperty.set("");
             commandPromptTextProperty.set("");
         }
+    }
+
+    public void searchNext(FilesViewModel filesViewModel) {
+        if (lastSearchPattern == null || lastSearchPattern.length() == 0) {
+            MessageModel.warn("search keyword does not set.");
+            return;
+        }
+
+        filesViewModel.selectNext(lastSearchPattern);
     }
 
     public boolean isCommandSet() {

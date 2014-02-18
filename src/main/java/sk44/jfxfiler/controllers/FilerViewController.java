@@ -117,6 +117,14 @@ public class FilerViewController implements Initializable {
                     enterCommandMode(CommandLineViewModel.Command.CREATE_DIRECTORY);
                 }
                 break;
+            case N:
+                // TODO
+                if (event.isShiftDown()) {
+
+                } else {
+                    commandLineViewModel.searchNext(filesViewModel);
+                }
+                break;
             case O:
                 if (event.isShiftDown()) {
                     otherFilerView.moveTo(filesViewModel.getCurrentPath());
