@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -117,9 +118,10 @@ public class FilerViewController implements Initializable {
                 }
                 break;
             case O:
-                // TODO
                 if (event.isShiftDown()) {
                     otherFilerView.moveTo(filesViewModel.getCurrentPath());
+                } else {
+                    moveTo(otherFilerView.filesViewModel.getCurrentPath());
                 }
                 break;
             case Q:
@@ -228,6 +230,15 @@ public class FilerViewController implements Initializable {
         commandField.disableProperty().bind(commandLineViewModel.commandModeProperty().not());
         commandField.textProperty().bindBidirectional(commandLineViewModel.commandProperty());
         commandField.promptTextProperty().bind(commandLineViewModel.commandPromptTextProperty());
+        commandField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
+                // マウスでフォーカス外された場合など
+                if (newValue == false) {
+                    commandLineViewModel.exitCommandMode();
+                }
+            }
+        });
     }
 
     private void showDirectoryNameCommand() {
