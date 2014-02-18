@@ -61,7 +61,7 @@ public class FilerViewController implements Initializable {
 
     @FXML
     protected void handleCommandAction(ActionEvent event) {
-        commandLineViewModel.executeCommand(filesViewModel.getCurrentPath());
+        commandLineViewModel.executeCommand(filesViewModel);
         focus();
         refresh();
     }
@@ -114,7 +114,7 @@ public class FilerViewController implements Initializable {
 //                if (event.isShiftDown()) {
                 if (event.isControlDown()) {
 //                    event.consume();
-                    showDirectoryNameCommand();
+                    enterCommandMode(CommandLineViewModel.Command.CREATE_DIRECTORY);
                 }
                 break;
             case O:
@@ -150,6 +150,10 @@ public class FilerViewController implements Initializable {
                 break;
             case LESS:
                 moveTo(filesViewModel.getRootPath());
+                break;
+            case SLASH:
+                // TODO スラッシュがつく
+                enterCommandMode(CommandLineViewModel.Command.SEARCH);
                 break;
         }
     }
@@ -241,8 +245,8 @@ public class FilerViewController implements Initializable {
         });
     }
 
-    private void showDirectoryNameCommand() {
-        commandLineViewModel.enterCommandMode(CommandLineViewModel.Command.CREATE_DIRECTORY);
+    private void enterCommandMode(CommandLineViewModel.Command command) {
+        commandLineViewModel.enterCommandMode(command);
         commandField.requestFocus();
         MessageModel.info(commandField.getPromptText());
     }

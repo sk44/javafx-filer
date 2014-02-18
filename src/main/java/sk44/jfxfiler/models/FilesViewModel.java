@@ -127,6 +127,17 @@ public class FilesViewModel {
         focusModelProperty.get().focus(index);
     }
 
+    public void selectNext(String pattern) {
+        List<PathModel> subList = files.subList(getFocusedIndex(), files.size() - 1);
+        for (PathModel p : subList) {
+            if (p.isMatch(pattern)) {
+                select(p);
+                return;
+            }
+        }
+        MessageModel.info("Search to bottom.");
+    }
+
     public void copyFrom(List<PathModel> pathes) {
         for (PathModel pathModel : pathes) {
             pathModel.copyTo(getCurrentPath());

@@ -69,6 +69,10 @@ public class PathModel {
         markValueProperty.set(mark ? MARK_VALUE : "");
     }
 
+    public boolean isMatch(String pattern) {
+        return nameProperty.get().contains(pattern);
+    }
+
     public void copyTo(Path directory) {
         // TODO
         if (isDirectory()) {
