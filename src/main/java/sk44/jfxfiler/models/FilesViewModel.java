@@ -140,6 +140,20 @@ public class FilesViewModel {
         MessageModel.info("Search to bottom.");
     }
 
+    public void selectPrevious(String pattern) {
+        if (getFocusedIndex() != 0) {
+            List<PathModel> subList = files.subList(0, getFocusedIndex());
+            for (int i = subList.size() - 1; i >= 0; i--) {
+                PathModel p = subList.get(i);
+                if (p.isMatch(pattern)) {
+                    select(p);
+                    return;
+                }
+            }
+        }
+        MessageModel.info("Search to top.");
+    }
+
     public void copyFrom(List<PathModel> pathes) {
         for (PathModel pathModel : pathes) {
             pathModel.copyTo(getCurrentPath());

@@ -118,9 +118,8 @@ public class FilerViewController implements Initializable {
                 }
                 break;
             case N:
-                // TODO
                 if (event.isShiftDown()) {
-
+                    commandLineViewModel.searchPrevious(filesViewModel);
                 } else {
                     commandLineViewModel.searchNext(filesViewModel);
                 }

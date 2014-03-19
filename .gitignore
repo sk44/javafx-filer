@@ -219,3 +219,5 @@ pip-log.txt
 /mtdb
 /debug.keyStore
 /.nb-gradle
+/.idea
+javafx-filer.iml

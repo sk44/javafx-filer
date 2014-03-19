@@ -86,12 +86,23 @@ public class CommandLineViewModel {
     }
 
     public void searchNext(FilesViewModel filesViewModel) {
-        if (lastSearchPattern == null || lastSearchPattern.length() == 0) {
-            MessageModel.warn("search keyword does not set.");
-            return;
-        }
+        if (isLastSearchPatternSet() == false) return;
 
         filesViewModel.selectNext(lastSearchPattern);
+    }
+
+    public void searchPrevious(FilesViewModel filesViewModel) {
+        if (isLastSearchPatternSet() == false) return;
+
+        filesViewModel.selectPrevious(lastSearchPattern);
+    }
+
+    private boolean isLastSearchPatternSet() {
+        if (lastSearchPattern == null || lastSearchPattern.length() == 0) {
+            MessageModel.warn("search keyword does not set.");
+            return true;
+        }
+        return false;
     }
 
     public boolean isCommandSet() {
