@@ -49,8 +49,9 @@ public class PathModel {
         } else {
             sizeValueProperty.set(FileSizeFormatter.format(getSizeForFile()));
         }
-        lastModifiedProperty.set(
-            getLastModified().toString(LAST_MODIFIED_DATE_FORMAT));
+        DateTime lastModified = getLastModified();
+        lastModifiedProperty.set(lastModified == null ? ""
+            : getLastModified().toString(LAST_MODIFIED_DATE_FORMAT));
     }
 
     public void toggleMark() {
@@ -67,6 +68,15 @@ public class PathModel {
     private void updateMark(boolean mark) {
         markedProperty.set(mark);
         markValueProperty.set(mark ? MARK_VALUE : "");
+    }
+
+    public boolean isMatch(String pattern) {
+        if (pattern == null) {
+            MessageModel.info("pattern does not set.");
+            return true;
+        }
+        String name = nameProperty.get().toLowerCase();
+        return name.contains(pattern.toLowerCase());
     }
 
     public void copyTo(Path directory) {

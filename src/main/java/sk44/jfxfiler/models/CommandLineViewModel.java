@@ -21,42 +21,88 @@ public class CommandLineViewModel {
 
     public enum Command {
 
-        // TODO つかう
-        CREATE_DIRECTORY;
+        CREATE_DIRECTORY("Enter new directory name.") {
+                @Override
+                void execute(CommandLineViewModel model, FilesViewModel filesViewModel) {
+                    Path newDir = filesViewModel.getCurrentPath().resolve(model.commandProperty().get());
+                    if (Files.exists(newDir)) {
+                        MessageModel.warn(newDir.toString() + " is already exists.");
+                    }
+                    try {
+                        Files.createDirectories(newDir);
+                        MessageModel.info("directory created: " + newDir.toString());
+                        model.exitCommandMode();
+                    } catch (IOException ex) {
+                        MessageModel.error("creating directory failed: " + newDir.toString());
+                        MessageModel.error(ex);
+                    }
+                }
+            },
+        SEARCH("Enter search keyword.") {
+                @Override
+                void execute(CommandLineViewModel model, FilesViewModel filesViewModel) {
+                    model.lastSearchPattern = model.commandProperty.get();
+                    filesViewModel.selectNext(model.lastSearchPattern);
+                }
+            };
+
+        private final String promptText;
+
+        private Command(String promptText) {
+            this.promptText = promptText;
+        }
+
+        abstract void execute(CommandLineViewModel model, FilesViewModel filesViewModel);
     }
 
     private Command command;
     private final BooleanProperty commandModeProperty = new SimpleBooleanProperty(false);
     private final StringProperty commandProperty = new SimpleStringProperty();
+    private final StringProperty commandPromptTextProperty = new SimpleStringProperty();
+    private String lastSearchPattern;
 
     public void enterCommandMode(Command command) {
         this.command = command;
         commandModeProperty.set(true);
+        commandPromptTextProperty.set(command.promptText);
         commandProperty.set("");
     }
 
-    public void executeCommand(Path currentDirectory) {
+    public void executeCommand(FilesViewModel filesViewModel) {
         if (isCommandSet() == false) {
             MessageModel.warn("please input directory name to create.");
             return;
         }
-        Path newDir = currentDirectory.resolve(commandProperty.get());
-        if (Files.exists(newDir)) {
-            MessageModel.warn(newDir.toString() + " is already exists.");
-        }
-        try {
-            Files.createDirectories(newDir);
-            MessageModel.info("directory created: " + newDir.toString());
-            exitCommandMode();
-        } catch (IOException ex) {
-            MessageModel.error("creating directory failed: " + newDir.toString());
-            MessageModel.error(ex);
-        }
+        command.execute(this, filesViewModel);
     }
 
     public void exitCommandMode() {
         commandModeProperty.set(false);
-        commandProperty.set("");
+        // TODO enum の方に処理をもたせる
+        if (command != Command.SEARCH) {
+            commandProperty.set("");
+            commandPromptTextProperty.set("");
+        }
+    }
+
+    public void searchNext(FilesViewModel filesViewModel) {
+        if (isLastSearchPatternSet() == false) return;
+
+        filesViewModel.selectNext(lastSearchPattern);
+    }
+
+    public void searchPrevious(FilesViewModel filesViewModel) {
+        if (isLastSearchPatternSet() == false) return;
+
+        filesViewModel.selectPrevious(lastSearchPattern);
+    }
+
+    private boolean isLastSearchPatternSet() {
+        if (lastSearchPattern == null || lastSearchPattern.length() == 0) {
+            MessageModel.warn("search keyword does not set.");
+            return true;
+        }
+        return false;
     }
 
     public boolean isCommandSet() {
@@ -70,6 +116,10 @@ public class CommandLineViewModel {
 
     public StringProperty commandProperty() {
         return commandProperty;
+    }
+
+    public StringProperty commandPromptTextProperty() {
+        return commandPromptTextProperty;
     }
 
 }

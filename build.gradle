@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply from: 'javafx.plugin'
 
-defaultTasks 'clean', 'assemble'
+defaultTasks 'run'
 
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'

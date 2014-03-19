@@ -17,6 +17,13 @@
     -fx-padding: -1em;
 }
 
+/*
+http://stackoverflow.com/questions/17931794/prompttext-in-textfield-of-javafx-2-hides-on-focus-after-some-java-7-update
+*/
+.text-input, .text-input:focused {
+    -fx-prompt-text-fill:darkgray;
+}
+
 .table-view {
     -fx-table-cell-border-color: transparent;
     -fx-background-color: transparent;
