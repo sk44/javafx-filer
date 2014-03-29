@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,7 +21,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.util.Callback;
 import sk44.jfxfiler.models.CommandLineViewModel;
 import sk44.jfxfiler.models.FilesViewModel;
 import sk44.jfxfiler.models.MessageModel;
@@ -184,12 +182,7 @@ public class FilerViewController implements Initializable {
     }
 
     void focus() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                filesView.requestFocus();
-            }
-        });
+        Platform.runLater(filesView::requestFocus);
     }
 
     @Override
@@ -202,52 +195,22 @@ public class FilerViewController implements Initializable {
         filesViewModel.selectionModelProperty().bindBidirectional(filesView.selectionModelProperty());
         currentPathLabel.textProperty().bind(filesViewModel.currentPathValueProperty());
 
-        markColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-                return p.getValue().markValueProperty();
-            }
-        });
-        markColumn.setCellFactory(new TextAlignmentCellFactory<PathModel>(TextAlignmentCellFactory.Alignment.RIGHT));
-        nameColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(final TableColumn.CellDataFeatures<PathModel, String> p) {
-                return p.getValue().nameProperty();
-            }
-        });
-        typeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-                return p.getValue().typeProperty();
-            }
-        });
-        sizeColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-                return p.getValue().sizeValueProperty();
-            }
-        });
-        sizeColumn.setCellFactory(new TextAlignmentCellFactory<PathModel>(TextAlignmentCellFactory.Alignment.RIGHT));
-        lastModifiedColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PathModel, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<PathModel, String> p) {
-                return p.getValue().lastModifiedProperty();
-            }
-        });
+        markColumn.setCellValueFactory(p -> p.getValue().markValueProperty());
+        markColumn.setCellFactory(new TextAlignmentCellFactory<>(TextAlignmentCellFactory.Alignment.RIGHT));
+        nameColumn.setCellValueFactory(p -> p.getValue().nameProperty());
+        typeColumn.setCellValueFactory(p -> p.getValue().typeProperty());
+        sizeColumn.setCellValueFactory(p -> p.getValue().sizeValueProperty());
+        sizeColumn.setCellFactory(new TextAlignmentCellFactory<>(TextAlignmentCellFactory.Alignment.RIGHT));
+        lastModifiedColumn.setCellValueFactory(p -> p.getValue().lastModifiedProperty());
         // automatic width
         nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(295));
 
         commandField.disableProperty().bind(commandLineViewModel.commandModeProperty().not());
         commandField.textProperty().bindBidirectional(commandLineViewModel.commandProperty());
         commandField.promptTextProperty().bind(commandLineViewModel.commandPromptTextProperty());
-        commandField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
-                // マウスでフォーカス外された場合など
-                if (newValue == false) {
-                    commandLineViewModel.exitCommandMode();
-                }
+        commandField.focusedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
+            if (newValue == false) {
+                commandLineViewModel.exitCommandMode();
             }
         });
     }
@@ -282,11 +245,8 @@ public class FilerViewController implements Initializable {
 
     private void scrollToFocused() {
         // runLater 内でスクロールを呼ばないと変な位置にスクロールしてしまう
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                filesView.scrollTo(filesViewModel.getFocusedIndex());
-            }
+        Platform.runLater(() -> {
+            filesView.scrollTo(filesViewModel.getFocusedIndex());
         });
     }
 

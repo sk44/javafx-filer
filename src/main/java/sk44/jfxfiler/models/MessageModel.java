@@ -22,6 +22,7 @@ public class MessageModel {
     /**
      メッセージの更新通知を受け取ってなんかする.
      */
+    @FunctionalInterface
     public interface Observer {
 
         /**
@@ -40,9 +41,9 @@ public class MessageModel {
         private final List<Observer> observers = new ArrayList<>();
 
         public void notifyObservers(String message) {
-            for (Observer o : observers) {
+            observers.stream().forEach((o) -> {
                 o.update(message);
-            }
+            });
         }
 
         public void addObserver(Observer o) {

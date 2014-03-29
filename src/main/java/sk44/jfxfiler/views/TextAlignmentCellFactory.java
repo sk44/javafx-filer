@@ -12,6 +12,7 @@ import javafx.util.Callback;
  * http://stackoverflow.com/questions/13455326/javafx-tableview-text-alignment
  *
  * @author sk
+ * @param <S>
  */
 public class TextAlignmentCellFactory<S> implements Callback<TableColumn<S, String>, TableCell<S, String>> {
 

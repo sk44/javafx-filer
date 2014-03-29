@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -49,11 +48,8 @@ public class FilesViewModel {
     private final ObjectProperty<Path> currentPathProperty = new SimpleObjectProperty<>();
     private final ReadOnlyStringProperty currentPathValueProperty = new ReadOnlyStringPropertyBase() {
         {
-            currentPathProperty.addListener(new InvalidationListener() {
-                @Override
-                public void invalidated(Observable o) {
-                    fireValueChangedEvent();
-                }
+            currentPathProperty.addListener((Observable o) -> {
+                fireValueChangedEvent();
             });
         }
 
@@ -155,9 +151,9 @@ public class FilesViewModel {
     }
 
     public void copyFrom(List<PathModel> pathes) {
-        for (PathModel pathModel : pathes) {
+        pathes.stream().forEach((pathModel) -> {
             pathModel.copyTo(getCurrentPath());
-        }
+        });
     }
 
     public void moveTo(Path newPath, boolean goParent) {
@@ -191,9 +187,9 @@ public class FilesViewModel {
     }
 
     public void deleteMarked() {
-        for (PathModel pathModel : collectMarked()) {
+        collectMarked().stream().forEach((pathModel) -> {
             pathModel.delete();
-        }
+        });
     }
 
     public void toggleSelected() {
@@ -228,11 +224,9 @@ public class FilesViewModel {
 
     public List<PathModel> collectMarked() {
         List<PathModel> results = new ArrayList<>();
-        for (PathModel model : files) {
-            if (model.isMarked()) {
-                results.add(model);
-            }
-        }
+        files.stream().filter((model) -> (model.isMarked())).forEach((model) -> {
+            results.add(model);
+        });
         return results;
     }
 

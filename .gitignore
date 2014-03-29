@@ -221,3 +221,4 @@ pip-log.txt
 /.nb-gradle
 /.idea
 javafx-filer.iml
+/.nb-gradle-properties
