@@ -1,7 +1,6 @@
 .mainFxmlClass {
     /*-fx-font-family: 'Lucida Console', 'MigMix 1M';*/
-    -fx-font-family: 'Menro';
-    -fx-font-size: 11pt;
+    -fx-font-size: 8pt;
     -fx-border-color: transparent;
 }
 .background,

@@ -7,12 +7,14 @@ package sk44.jfxfiler.models;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.joda.time.DateTime;
 
 /**
  * filer path model.
@@ -49,9 +51,9 @@ public class PathModel {
         } else {
             sizeValueProperty.set(FileSizeFormatter.format(getSizeForFile()));
         }
-        DateTime lastModified = getLastModified();
+        LocalDateTime lastModified = getLastModified();
         lastModifiedProperty.set(lastModified == null ? ""
-            : getLastModified().toString(LAST_MODIFIED_DATE_FORMAT));
+            : getLastModified().format(DateTimeFormatter.ofPattern(LAST_MODIFIED_DATE_FORMAT)));
     }
 
     public void toggleMark() {
@@ -180,9 +182,10 @@ public class PathModel {
         return Files.isDirectory(path);
     }
 
-    public final DateTime getLastModified() {
+    public final LocalDateTime getLastModified() {
         try {
-            return new DateTime(Files.getLastModifiedTime(path).toMillis());
+//            return new LocalDateTime(Files.getLastModifiedTime(path).toMillis());
+            return LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneOffset.ofHours(9));
         } catch (IOException ex) {
             MessageModel.error(ex);
             return null;
