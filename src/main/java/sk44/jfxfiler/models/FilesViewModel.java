@@ -200,7 +200,7 @@ public class FilesViewModel {
         pathModel.toggleMark();
     }
 
-    private void updateFiles() {
+    public void updateFiles() {
 
         files.clear();
         Path parent = getParentPath();

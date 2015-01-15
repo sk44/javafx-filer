@@ -80,6 +80,13 @@ public class FilerViewController implements Initializable {
 
     @FXML
     protected void handleKeyPressedInTable(KeyEvent event) {
+
+        // TODO モードを考える必要がある（通常、検索入力中、検索中 etc ）
+        // TODO フォーカスするとスラッシュが入ってしまうのでフォーカスせずに有効な入力値だけパス
+        if (commandLineViewModel.handleKeyEvent(event, filesViewModel)) {
+            return;
+        }
+
         switch (event.getCode()) {
             case C:
                 copy();
@@ -109,8 +116,8 @@ public class FilerViewController implements Initializable {
                 break;
             case M:
                 // TODO "M" が入力されてしまう
-//                if (event.isShiftDown()) {
-                if (event.isControlDown()) {
+                if (event.isShiftDown()) {
+//                if (event.isControlDown()) {
 //                    event.consume();
                     enterCommandMode(CommandLineViewModel.Command.CREATE_DIRECTORY);
                 }
@@ -205,7 +212,10 @@ public class FilerViewController implements Initializable {
         // automatic width
         nameColumn.prefWidthProperty().bind(filesView.widthProperty().subtract(295));
 
-        commandField.disableProperty().bind(commandLineViewModel.commandModeProperty().not());
+        // TODO disabled 制御
+//        commandField.disableProperty().bind(commandLineViewModel.commandModeProperty().not());
+        commandField.disableProperty().set(true);
+
         commandField.textProperty().bindBidirectional(commandLineViewModel.commandProperty());
         commandField.promptTextProperty().bind(commandLineViewModel.commandPromptTextProperty());
         commandField.focusedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
@@ -217,7 +227,7 @@ public class FilerViewController implements Initializable {
 
     private void enterCommandMode(CommandLineViewModel.Command command) {
         commandLineViewModel.enterCommandMode(command);
-        commandField.requestFocus();
+//        commandField.requestFocus();
         MessageModel.info(commandField.getPromptText());
     }
 

@@ -12,6 +12,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.input.KeyEvent;
 
 /**
  *
@@ -24,13 +25,16 @@ public class CommandLineViewModel {
         CREATE_DIRECTORY("Enter new directory name.") {
                 @Override
                 void execute(CommandLineViewModel model, FilesViewModel filesViewModel) {
-                    Path newDir = filesViewModel.getCurrentPath().resolve(model.commandProperty().get());
+                    Path newDir = filesViewModel
+                    .getCurrentPath()
+                    .resolve(model.commandProperty().get());
                     if (Files.exists(newDir)) {
                         MessageModel.warn(newDir.toString() + " is already exists.");
                     }
                     try {
                         Files.createDirectories(newDir);
                         MessageModel.info("directory created: " + newDir.toString());
+                        filesViewModel.updateFiles();
                         model.exitCommandMode();
                     } catch (IOException ex) {
                         MessageModel.error("creating directory failed: " + newDir.toString());
@@ -61,6 +65,36 @@ public class CommandLineViewModel {
     private final StringProperty commandPromptTextProperty = new SimpleStringProperty();
     private String lastSearchPattern;
 
+    public boolean handleKeyEvent(KeyEvent event, FilesViewModel filesViewModel) {
+        if (commandModeProperty.get() == false) {
+            return false;
+        }
+        switch (event.getCode()) {
+            case ENTER:
+                executeCommand(filesViewModel);
+                return true;
+            case ESCAPE:
+                clearCommand();
+                exitCommandMode();
+                return true;
+            case Q:
+                return false;
+            case H:
+                if (event.isControlDown()) {
+                    deleteLastChar();
+                    return true;
+                }
+                addTextToCommand(event.getText());
+                return true;
+            case BACK_SPACE:
+                deleteLastChar();
+                return true;
+            default:
+                addTextToCommand(event.getText());
+                return true;
+        }
+    }
+
     public void enterCommandMode(Command command) {
         this.command = command;
         commandModeProperty.set(true);
@@ -86,13 +120,17 @@ public class CommandLineViewModel {
     }
 
     public void searchNext(FilesViewModel filesViewModel) {
-        if (isLastSearchPatternSet() == false) return;
+        if (isLastSearchPatternSet() == false) {
+            return;
+        }
 
         filesViewModel.selectNext(lastSearchPattern);
     }
 
     public void searchPrevious(FilesViewModel filesViewModel) {
-        if (isLastSearchPatternSet() == false) return;
+        if (isLastSearchPatternSet() == false) {
+            return;
+        }
 
         filesViewModel.selectPrevious(lastSearchPattern);
     }
@@ -103,6 +141,22 @@ public class CommandLineViewModel {
             return true;
         }
         return false;
+    }
+
+    private void clearCommand() {
+        commandProperty().set("");
+    }
+
+    private void addTextToCommand(String text) {
+        commandProperty().set(commandProperty.get() + text);
+    }
+
+    private void deleteLastChar() {
+        String command = commandProperty().get();
+        if (command == null || command.isEmpty()) {
+            return;
+        }
+        commandProperty().set(command.substring(0, command.length() - 1));
     }
 
     public boolean isCommandSet() {
