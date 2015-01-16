@@ -115,10 +115,7 @@ public class FilerViewController implements Initializable {
                 goForward();
                 break;
             case M:
-                // TODO "M" が入力されてしまう
                 if (event.isShiftDown()) {
-//                if (event.isControlDown()) {
-//                    event.consume();
                     enterCommandMode(CommandLineViewModel.Command.CREATE_DIRECTORY);
                 }
                 break;
@@ -164,7 +161,6 @@ public class FilerViewController implements Initializable {
                 moveTo(filesViewModel.getRootPath());
                 break;
             case SLASH:
-                // TODO スラッシュがつく
                 enterCommandMode(CommandLineViewModel.Command.SEARCH);
                 break;
         }

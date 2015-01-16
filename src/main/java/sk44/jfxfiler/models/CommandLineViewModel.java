@@ -34,7 +34,10 @@ public class CommandLineViewModel {
                     try {
                         Files.createDirectories(newDir);
                         MessageModel.info("directory created: " + newDir.toString());
+                        // update するとフォーカスインデックスが消えるのでとっておく
+                        int focusedIndex = filesViewModel.getFocusedIndex();
                         filesViewModel.updateFiles();
+                        filesViewModel.select(focusedIndex);
                         model.exitCommandMode();
                     } catch (IOException ex) {
                         MessageModel.error("creating directory failed: " + newDir.toString());
@@ -90,6 +93,7 @@ public class CommandLineViewModel {
                 deleteLastChar();
                 return true;
             default:
+                // TODO ime オンだとしぬ
                 addTextToCommand(event.getText());
                 return true;
         }

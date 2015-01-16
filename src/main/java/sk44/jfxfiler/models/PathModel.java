@@ -4,6 +4,7 @@
  */
 package sk44.jfxfiler.models;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +29,22 @@ public class PathModel {
     private static final String MARK_VALUE = "*";
     private static final String SIZE_VALUE_FOR_DIR = "";
     private static final String LAST_MODIFIED_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
+
+    private static boolean deleteRecursive(File deletePath) throws IOException {
+        if (deletePath.isDirectory()) {
+            for (File f : deletePath.listFiles()) {
+                if (deleteRecursive(f) == false) {
+                    return false;
+                }
+            }
+        }
+        boolean success = deletePath.delete();
+        if (success) {
+            MessageModel.info(deletePath.getAbsolutePath() + " deleted.");
+        }
+        return success;
+    }
+
     private final Path path;
     private final boolean parent;
     private final BooleanProperty markedProperty = new SimpleBooleanProperty(false);
@@ -97,11 +114,8 @@ public class PathModel {
     }
 
     public void delete() {
-        // TODO 再帰的に消せるようにする
-        // http://stackoverflow.com/questions/779519/delete-files-recursively-in-java
         try {
-            boolean deleted = Files.deleteIfExists(path);
-            if (deleted) {
+            if (deleteRecursive(path.toFile())) {
                 MessageModel.info(path.toString() + " was successfully deleted.");
             } else {
                 MessageModel.warn("deleting " + path.toString() + " was failed.");
