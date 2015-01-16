@@ -5,9 +5,14 @@
  */
 package sk44.jfxfiler.models;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -50,6 +55,28 @@ public class CommandLineViewModel {
                 void execute(CommandLineViewModel model, FilesViewModel filesViewModel) {
                     model.lastSearchPattern = model.commandProperty.get();
                     filesViewModel.selectNext(model.lastSearchPattern);
+                }
+            },
+        EXECUTE_COMMAND("Enter execute command.") {
+
+                @Override
+                void execute(CommandLineViewModel model, FilesViewModel filesViewModel) {
+                    String command = model.commandProperty.get();
+                    List<String> commands = new ArrayList<>(Arrays.asList(command.split(" ")));
+                    commands.add(filesViewModel.getFocusedModel().getPath().toString());
+                    MessageModel.info("execute command: " + commands);
+                    ProcessBuilder processBuilder = new ProcessBuilder(commands);
+                    try {
+                        Process p = processBuilder.start();
+                        p.waitFor();
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+                            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                                MessageModel.info(line);
+                            }
+                        }
+                    } catch (IOException | InterruptedException ex) {
+                        MessageModel.error(ex);
+                    }
                 }
             };
 

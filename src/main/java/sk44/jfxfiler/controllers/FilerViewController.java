@@ -137,7 +137,8 @@ public class FilerViewController implements Initializable {
                 Platform.exit();
                 break;
             case X:
-                openAssosiated();
+//                openAssosiated();
+                enterCommandMode(CommandLineViewModel.Command.EXECUTE_COMMAND);
                 break;
             case Y:
                 filesViewModel.yankCurrentPath();
